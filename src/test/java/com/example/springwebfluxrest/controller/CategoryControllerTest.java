@@ -2,6 +2,9 @@ package com.example.springwebfluxrest.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -90,5 +93,41 @@ public class CategoryControllerTest {
         .exchange()
         .expectStatus()
         .isOk();
+    }
+
+    @Test
+    void testPatchCategoryWithChange() {
+        
+        when(categoryRepo.findById(anyString())).thenReturn(Mono.just(Category.builder().build()));
+        when(categoryRepo.save(any(Category.class))).thenReturn(Mono.just(Category.builder().build()));
+
+        Mono<Category> categoryToUpdate = Mono.just(Category.builder().name("new cat").build());
+
+        webTestClient.patch()
+        .uri("/api/v1/category/1")
+        .body(categoryToUpdate, Category.class)
+        .exchange()
+        .expectStatus()
+        .isOk();
+
+        verify(categoryRepo, times(1)).save(any(Category.class));
+    }
+
+    @Test
+    void testPatchCategoryWithoutChange() {
+        
+        when(categoryRepo.findById(anyString())).thenReturn(Mono.just(Category.builder().build()));
+        when(categoryRepo.save(any(Category.class))).thenReturn(Mono.just(Category.builder().build()));
+
+        Mono<Category> categoryToUpdate = Mono.just(Category.builder().build());
+
+        webTestClient.patch()
+        .uri("/api/v1/category/1")
+        .body(categoryToUpdate, Category.class)
+        .exchange()
+        .expectStatus()
+        .isOk();
+
+        verify(categoryRepo, never()).save(any(Category.class));
     }
 }
