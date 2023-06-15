@@ -15,6 +15,7 @@ import org.reactivestreams.Publisher;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.example.springwebfluxrest.domain.Category;
+import com.example.springwebfluxrest.domain.Vendor;
 import com.example.springwebfluxrest.repository.CategoryRepo;
 
 import reactor.core.publisher.Flux;
@@ -82,7 +83,7 @@ public class CategoryControllerTest {
 
     @Test
     void testUpdateCategory() {
-        
+        when(categoryRepo.findById(anyString())).thenReturn(Mono.just(Category.builder().build()));
         when(categoryRepo.save(any(Category.class))).thenReturn(Mono.just(Category.builder().build()));
 
         Mono<Category> categoryToUpdate = Mono.just(Category.builder().name("new cat").build());
