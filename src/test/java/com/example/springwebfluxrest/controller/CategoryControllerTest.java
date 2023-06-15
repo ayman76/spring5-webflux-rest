@@ -1,5 +1,6 @@
 package com.example.springwebfluxrest.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.reactivestreams.Publisher;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.example.springwebfluxrest.domain.Category;
@@ -57,6 +59,21 @@ public class CategoryControllerTest {
         .exchange()
         .expectBodyList(Category.class)
         .hasSize(2);  
+
+    }
+
+    @Test
+    void testCreateCategory() {
+        when(categoryRepo.saveAll(any(Publisher.class))).thenReturn(Flux.just(new Category()));
+
+        Mono<Category> catToSaveMono = Mono.just(new Category());
+
+        webTestClient.post()
+        .uri("/api/v1/category")
+        .body(catToSaveMono, Category.class)
+        .exchange()
+        .expectStatus()
+        .isCreated();
 
     }
 }

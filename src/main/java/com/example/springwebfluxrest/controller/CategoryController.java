@@ -1,8 +1,13 @@
 package com.example.springwebfluxrest.controller;
 
+import org.reactivestreams.Publisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.springwebfluxrest.domain.Category;
@@ -29,6 +34,12 @@ public class CategoryController {
     @GetMapping("/{id}")
     public Mono<Category> getById(@PathVariable String id){
         return categoryRepo.findById(id);
+    }
+
+    @ResponseStatus(code = HttpStatus.CREATED)
+    @PostMapping()
+    Mono<Void> createCategory(@RequestBody Publisher<Category> categoryStream){
+        return categoryRepo.saveAll(categoryStream).then();
     }
 
     
